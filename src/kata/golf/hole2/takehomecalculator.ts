@@ -1,44 +1,42 @@
-import {Incalculable} from "./incalculable";
+import { Incalculable } from "./incalculable";
 
-export class Pair<A, B> {
-    public first: A;
-    public second: B;
+export class Money {
+  public value: number;
+  public currency: string;
 
-    constructor(first: A, second: B) {
-        this.first = first;
-        this.second = second;
-    }
+  constructor(first: number, second: string) {
+    this.value = first;
+    this.currency = second;
+  }
 }
 
 export class Takehomecalculator {
-    private percent: number
+  private percent: number;
 
-    constructor(percent: number) {
-        this.percent = percent;
+  constructor(percent: number) {
+    this.percent = percent;
+  }
+
+  netAmount(first: Money, ...rest: Money[]): Money {
+    const pairs: Array<Money> = Array.from(rest);
+    let total: Money = first;
+
+    for (let next of pairs) {
+      if (next.currency !== total.currency) {
+        throw new Incalculable();
+      }
     }
 
-    netAmount(first: Pair<number, string>, ...rest : Pair<number, string>[] ): Pair<number, string> {
-
-        const pairs: Array<Pair<number, string>> = Array.from(rest);
-        let total: Pair<number, string> = first
-
-        for (let next of pairs) {
-            if (next.second !== total.second) {
-                throw new Incalculable()
-            }
-        }
-
-        for (const next of pairs) {
-            total = new Pair<number, string>(total.first + next.first, next.second)
-        }
-
-        const amount:number = total.first * (this.percent / 100.0 );
-        const tax: Pair<number, string> = new Pair(Math.trunc(amount), first.second);
-
-        if (total.second !== tax.second) {
-            throw new Incalculable()
-        }
-        return new Pair(total.first - tax.first, first.second)
+    for (const next of pairs) {
+      total = new Money(total.value + next.value, next.currency);
     }
 
+    const amount: number = total.value * (this.percent / 100.0);
+    const tax: Money = new Money(Math.trunc(amount), first.currency);
+
+    if (total.currency !== tax.currency) {
+      throw new Incalculable();
+    }
+    return new Money(total.value - tax.value, first.currency);
+  }
 }
