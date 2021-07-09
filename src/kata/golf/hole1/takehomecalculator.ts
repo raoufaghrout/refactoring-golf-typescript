@@ -23,7 +23,7 @@ export class Takehomecalculator {
         let total: Pair<number, string> = first
 
         for (let next of pairs) {
-            if (next.second != total.second) {
+            if (next.second !== total.second) {
                 throw new Incalculable()
             }
         }
@@ -35,11 +35,10 @@ export class Takehomecalculator {
         const amount:number = total.first * (this.percent / 100.0 );
         const tax: Pair<number, string> = new Pair(Math.trunc(amount), first.second);
 
-        if (total.second == tax.second) {
-            return new Pair(total.first - tax.first, first.second)
-        } else {
+        if (total.second !== tax.second) {
             throw new Incalculable()
         }
+        return new Pair(total.first - tax.first, first.second)
     }
 
 }
